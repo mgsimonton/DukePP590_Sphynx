@@ -15,7 +15,7 @@ missing = ['.', 'NA', 'NULL', '', '-', '9999999']
 
 #Imports all dataframes as one giant list
 ###TASK: add concatenate function into this line to save on load times 
-list_of_dfs = [pd.read_table(v, sep = " ", names = ['ID', 'DayTime', 'consump']) for v in paths]
+list_of_dfs = [pd.read_table(v, sep = " ", names = ['ID', 'DayTime', 'consump'], na_values = missing) for v in paths]
 
 #df_big = pd.concat([df1, df2, df3], ignore_index = True)
 
