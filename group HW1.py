@@ -15,7 +15,9 @@ missing = ['.', 'NA', 'NULL', '', '-', '9999999']
 
 #Imports all dataframes as one giant list
 ###TASK: add concatenate function into this line to save on load times 
-list_of_dfs = [pd.read_table(v, sep = " ", names = ['ID', 'DayTime', 'consump'], na_values = missing) for v in paths]
+#list_of_dfs = [pd.read_table(v, sep = " ", names = ['ID', 'DayTime', 'consump'], na_values = missing) for v in paths]
+df_big = pd.concat([pd.read_table(v, sep = " ", names = ['ID', 'DayTime', 'consump'], na_values = missing) for v in paths], ignore_index = True)
+
 
 #df_big = pd.concat([df1, df2, df3], ignore_index = True)
 
@@ -23,13 +25,13 @@ list_of_dfs = [pd.read_table(v, sep = " ", names = ['ID', 'DayTime', 'consump'],
 df_big = df_big.drop_duplicates()
 df_big = df_big.drop_duplicates(take_last = True)
 
-#Look for screwed up days
-df_big[df_big.DayTime == 45202]
-df_big[df_big.DayTime == 45203]
-df_big[df_big.DayTime == 66949]   #
-df_big[df_big.DayTime == 66950]   #
-df_big[df_big.DayTime == 29849]   #
-df_big[df_big.DayTime == 29850]   #
+#List of affected days
+#df_big[df_big.DayTime == 45202]
+#df_big[df_big.DayTime == 45203]
+#df_big[df_big.DayTime == 66949]   
+#df_big[df_big.DayTime == 66950]   
+#df_big[df_big.DayTime == 29849]   
+#df_big[df_big.DayTime == 29850]   
 
 #drop all records for DST days
 
@@ -37,16 +39,13 @@ df_big[df_big.DayTime == 29850]   #
 #a = 345999%100
 #day = ([] - a)/100
 
-
-#df_new = df1[df1.DayTime > 66900]
-
-
 #Drop NAs (including former 999999 entries
-df1.dropna()
+df_big.dropna()
 
 
 #import Excel data
 df_excel = pd.read_table(main_dir + csv_file, usecols = ['ID', 'Code', 'Residential - Tariff allocation', 'Residential - stimulus allocation', 'SME allocation'])
 
 #Merge Excel data based on meter IDs in common between sets
-pd.merge(df1, df_excel) 
+pd.merge(df_clean, df_excel) 
+#Leaving NaNs in for now
