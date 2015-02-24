@@ -23,8 +23,8 @@ df_assign.rename(columns = {'Residential - Tariff allocation': 'tariff', 'Reside
 #Merge w/consumption data
 df = pd.merge(df, df_assign)
 
+#Set treatment and control groups in df ----------
 
-#Set treatment and control groups in df
 # Control group = observations where 'Residential stimulus' = E
 #Treatment group = observations where 'Residential stimulus' = 1
 # -OR- where 'Residential tarrif' = A
@@ -46,8 +46,7 @@ df2 = pd.concat([df_trt, df_ctrl], ignore_index = True)
 #Remerge w/original consumption data
 df = pd.merge(df,df2)
 
-# MERGE ---------
-
+#Import Dan's time series corrections
 df_timecor = pd.read_csv(root + "/timeseries_correction.csv", usecols = [2,3,4,5,6,9,10], parse_dates = [0])
 
 # AGGREGATION (DAILY) ---------------
@@ -55,11 +54,13 @@ df_timecor = pd.read_csv(root + "/timeseries_correction.csv", usecols = [2,3,4,5
 df['hour_cer'] = df['date']%100
 df['day_cer'] = (df['date'] - df['hour_cer'])/100
 
+#Drop original date column w/annoying format
 df = df.drop('date',axis=1)
+
+#Merge adjusted Hour and Month labels from Dan's code
 df = pd.merge(df, df_timecor, on = ['hour_cer', 'day_cer'])
 
-#Group
-
+#Group for daily aggregation
 grp = df.groupby(['panid','date', 'assignment'])
 agg = grp['kwh'].sum()
 
