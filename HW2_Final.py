@@ -1,3 +1,8 @@
+"""
+SPENT TOO MUCH TIME FIXING YOUR CODE
+-- Dan
+"""
+
 from __future__ import division
 from pandas import Series, DataFrame
 import pandas as pd
@@ -7,9 +12,9 @@ import matplotlib.pyplot as plt
 from scipy.stats import ttest_ind
 from scipy.special import stdtr
 
-main_dir = "C:\Users\Daniel\Desktop\BigData\CER_both\electricity_revised_2012"
-root = main_dir + "\Unzipped_Data"
-paths = [root + "\\File" + str(v) + ".txt" for v in range(1,6)]
+main_dir = "/Users/dnoriega/Dropbox/pubpol590_sp15/data_sets/CER/"
+root = main_dir + "cooked/"
+paths = [root + "File" + str(v) + ".txt" for v in range(1,6)]
 
 
 
@@ -19,21 +24,20 @@ paths = [root + "\\File" + str(v) + ".txt" for v in range(1,6)]
 missing = ['.', 'NA', 'NULL', '', '-', '9999999']
 
 # import consumption data, concatenate
-df = pd.concat([pd.read_table(v, sep = " ", names = ['Panid', 'Date', 'Kwh'],
-    na_values  = missing)
-    for v in paths], ignore_index = True)
+df = pd.concat([pd.read_table(v, sep = " ", names = ['Panid', 'Date', 'Kwh'], na_values  = missing) for v in paths], ignore_index = True)
 
-# import assignment data, clean columns 
-df_assign = pd.read_csv(root + "\\Allocations.csv", usecols = [0,1,2,3,4])
-df_assign.rename(columns = {'ID' : 'Panid', 'Code' : 'Group', 'Residential - Tariff allocation': 'tariff',
-    'Residential - stimulus allocation': 'stimulus'}, inplace = True)
+# import assignment data, clean columns
+df_assign = pd.read_csv(root + "SME and Residential allocations.csv", usecols = [0,1,2,3,4])
+df_assign.rename(columns = {'ID' : 'Panid', 'Code' : 'Group', 'Residential - Tariff allocation': 'tariff', 'Residential - stimulus allocation': 'stimulus'}, inplace = True)
 
+"""  REMOVED BY DAN
+CAUSED SIGNIFICANT ISSUES
 # merge consumption and assignment data
-df = pd.merge(df, df_assign)
+# df = pd.merge(df, df_assign)
+"""
 
 
-
-## --- SET TREATMENT & CONTROL GROUPS --- ## 
+## --- SET TREATMENT & CONTROL GROUPS --- ##
 
 # control group; 929 rows
 df_ctr = df_assign[(df_assign.stimulus == 'E')]
@@ -54,7 +58,11 @@ df = pd.merge(df,df2)
 ## --- CORRECTING DATES --- ##
 
 # import Dan's time series correction
-df_timecor = pd.read_csv(root + "\\timeseries_correction.csv", usecols = [1,7,8], parse_dates = [0])
+""" PARSED WRONG COLUMN/KEPT TOO FEW COLUMNS
+df_timecor = pd.read_csv(root + "/timeseries_correction.csv", usecols = [1,7,8], parse_dates = [0])
+"""
+df_timecor = pd.read_csv(root + "/timeseries_correction.csv", parse_dates = [1])
+df_timecor.drop(['Unnamed: 0'], axis = 1, inplace=True)
 
 # teasting out 5-digit date elements
 df['hour_cer'] = df['Date']%100
@@ -63,14 +71,19 @@ df['day_cer'] = (df['Date']-df['hour_cer'])/100
 # getting rid of 5-digit date
 df = df.drop('Date',axis=1)
 
+""" FAILED INITIALLY AS YOU DID NOT SHARE THE SAME KEY!
 # merge with time series correction
+df = pd.merge(df, df_timecor, on = ['hour_cer', 'day_cer'])"""
 df = pd.merge(df, df_timecor, on = ['hour_cer', 'day_cer'])
+
+""" THIS BLOCK WAS NOT NEEDED -- the timeseries file GAVE these.
+huge slowdown when you have to make this again
 
 # break out
 df['year'] = df['ts'].apply(lambda x: x.year)
 df['month'] = df['ts'].apply(lambda x: x.month)
 df['day'] = df['ts'].apply(lambda x: x.day)
-df['ymd'] = df['ts'].apply(lambda x: x.date())
+df['ymd'] = df['ts'].apply(lambda x: x.date())"""
 
 
 ## --- DROPPING HOUR ERRORS --- ##
@@ -95,26 +108,22 @@ trt = {k[0]: agg.Kwh[v].values for k, v in grp1.groups.iteritems() if k[1] == 'T
 ctrl = {k[0]: agg.Kwh[v].values for k, v in grp1.groups.iteritems() if k[1] == 'C'} # get set of all controls by date
 keys = ctrl.keys()
 
-
-
 ## --- P-VALUES AND T-VALUES --- ##
 
-tstats = DataFrame([(k, np.abs(ttest_ind(trt[k], ctrl[k], equal_var=False)[0])) for k in keys],
-    columns = ['day_cer', 'tstat'])
-pvals = DataFrame([(k, np.abs(ttest_ind(trt[k], ctrl[k], equal_var=False)[1])) for k in keys],
-    columns = ['day_cer', 'pval'])
+tstats = DataFrame([(k, np.abs(ttest_ind(trt[k], ctrl[k], equal_var=False)[0])) for k in keys], columns = ['day_cer', 'tstat'])
+pvals = DataFrame([(k, np.abs(ttest_ind(trt[k], ctrl[k], equal_var=False)[1])) for k in keys], columns = ['day_cer', 'pval'])
 
-# Combine the two statistics into one dataframe    
+# Combine the two statistics into one dataframe
 t_p = pd.merge(tstats, pvals)
-   
+
 # SortING
 t_p.sort(['day_cer'], inplace=True)
 t_p.reset_index(inplace=True, drop=True)
-   
-      
-            
-## --- DAILY PLOT --- ##   
 
+
+
+## --- DAILY PLOT --- ##
+"""GRAPH IS WRONG/DON"T KNOW WHY"""
 # initialize plot
 fig1 = plt.figure()
 
