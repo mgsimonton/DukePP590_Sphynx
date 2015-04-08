@@ -29,7 +29,7 @@ np.random.seed(1789)
 
 
 # 3. use the function np.random.choice and extract the following sample size 
-#    without replacement: (THE ORDER MATTERS)
+#    without replacement: 
 ctrl = np.random.choice(Ctrl, size=300, replace=False)
 a1 = np.random.choice(A1, size=150, replace=False)
 a3 = np.random.choice(A3, size=150, replace=False)
@@ -52,8 +52,7 @@ df1.reset_index(inplace = True,drop = True)
 df2 = pd.read_csv(root + "kwh_redux_pretrial.csv")
 
 
-# 6. merge the consumption data with the sampled IDs, which will strip away a 
-#    large portion of the original consumption dataframe.
+# 6. merge the consumption data with the sampled IDs
 df3 = pd.merge(df1,df2,on = 'ID')
 
 
@@ -78,11 +77,12 @@ df4 = pd.merge(df,agg_piv,on = 'ID')
 # 10. compute a logit model comparing each treatment group to the control (4 logit 
 #    models total) using only the consumption data as independent variables.
 
+## set code values for control group to 0.
 c = df4['tariff'] == 'E'
 ctrl = df4[c]
 ctrl.code = 0
 
-## block by treatment
+## block by treatment: extracting each treatment group
 trt_a1 = df4[(df4.tariff == "A")&(df4.stimulus == "1")]
 trt_a3 = df4[(df4.tariff == "A")&(df4.stimulus == "3")]
 trt_b1 = df4[(df4.tariff == "B")&(df4.stimulus == "1")]
@@ -94,13 +94,13 @@ ctrl_a3 = pd.concat([ctrl,trt_a3])
 ctrl_b1 = pd.concat([ctrl,trt_b1])
 ctrl_b3 = pd.concat([ctrl,trt_b3])
 
-## independent variables
+## columns for independent variables
 kwh_cols_a1 = [v for v in ctrl_a1.columns.values if v.startswith ('kwh')]
 kwh_cols_a3 = [v for v in ctrl_a3.columns.values if v.startswith ('kwh')]
 kwh_cols_b1 = [v for v in ctrl_b1.columns.values if v.startswith ('kwh')]
 kwh_cols_b3 = [v for v in ctrl_b3.columns.values if v.startswith ('kwh')]
 
-## define variables
+## define variables & add constants
 y_a1 = ctrl_a1['code']
 x_a1 = ctrl_a1[kwh_cols_a1]
 x_a1 = sm.add_constant(x_a1)
