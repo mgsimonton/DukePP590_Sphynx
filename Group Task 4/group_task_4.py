@@ -6,7 +6,6 @@ import os
 
 main_dir = "C:\Users\samjh_000\Desktop"
 
-
 ####### Section 1
 
 
@@ -107,7 +106,6 @@ w = df_long['w']
 mu = pd.get_dummies(df_long['ym'], prefix = 'ym').iloc[:, 1:-1]
 X = pd.concat([TP, P, mu], axis=1)
 
-
 ids = df_long['ID']
 y = demean(y, ids)
 X = demean(X, ids)
@@ -117,7 +115,7 @@ import statsmodels.api as sm
 ## WITHOUT WEIGHTS
 fe_model = sm.OLS(y, X) # linearly prob model
 fe_results = fe_model.fit() # get the fitted values
-print(fe_results.summary()) # print pretty results (no results given lack of obs)
+print(fe_results.summary()) # print pretty results 
 
 # WITH WEIGHTS
 ## apply weights to data
@@ -129,4 +127,4 @@ X = DataFrame(X, columns = nms) # update to dataframe; use original names
 
 fe_w_model = sm.OLS(y, X) # linearly prob model
 fe_w_results = fe_w_model.fit() # get the fitted values
-print(fe_w_results.summary()) # print pretty results (no results given lack of obs)
+print(fe_w_results.summary()) # print pretty results 
