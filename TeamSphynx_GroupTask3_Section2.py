@@ -193,8 +193,9 @@ def do_logit(df, tar, stim, D = None):
 #                           SECTION 2                               #
 #####################################################################
 
-main_dir = "/Users/janenicholson/Desktop/PubPol590/Team Assignments/Assignment 3/"
-root = main_dir + "Data/"
+# main_dir = "/Users/janenicholson/Desktop/PubPol590/Team Assignments/Assignment 3/"
+# root = main_dir + "Data/"
+root = '/Users/dnoriega/Dropbox/PubPol590_Sp15/data_sets/CER/tasks/3_task_data/'
 
 nas = ['', ' ', 'NA'] # set NA values so that we dont end up with numbers and text
 srvy = pd.read_csv(root + 'Smart meters Residential pre-trial survey data.csv', na_values = nas)
@@ -204,6 +205,9 @@ df = pd.read_csv(root + 'data_section2.csv')
 qs = ques_list(srvy)
 
 # get dummies
+
+"""DAN - DUMMY 200 WAS REQUIRED IN THE REGRESSION! -1 PT"""
+
 sel = [43521, 450]
 dummies = dvt(srvy, sel)
 
