@@ -1,10 +1,12 @@
+"""9/9 pts"""
+
 from __future__ import division
 import pandas as pd
 from pandas import Series, DataFrame
 import numpy as np
 import os
 
-main_dir = "C:\Users\samjh_000\Desktop"
+main_dir = "/Users/dnoriega/Dropbox/pubpol590_sp15/data_sets/CER/tasks/4_task_data/"
 
 ####### Section 1
 
@@ -31,7 +33,7 @@ for i in tariffs:
     for j in stimuli:
         # dummy vars must start with "D_" and consumption vars with "kwh_"
         logit_results, df_logit = do_logit(df_pretrial, i, j, add_D=None, mc=False)
-        
+
 # QUICK MEANS COMPARISON WITH T-TEST BY HAND----------
 # create means
 grp = df_logit.groupby('tariff')
@@ -115,7 +117,7 @@ import statsmodels.api as sm
 ## WITHOUT WEIGHTS
 fe_model = sm.OLS(y, X) # linearly prob model
 fe_results = fe_model.fit() # get the fitted values
-print(fe_results.summary()) # print pretty results 
+print(fe_results.summary()) # print pretty results
 
 # WITH WEIGHTS
 ## apply weights to data
@@ -127,4 +129,4 @@ X = DataFrame(X, columns = nms) # update to dataframe; use original names
 
 fe_w_model = sm.OLS(y, X) # linearly prob model
 fe_w_results = fe_w_model.fit() # get the fitted values
-print(fe_w_results.summary()) # print pretty results 
+print(fe_w_results.summary()) # print pretty results
